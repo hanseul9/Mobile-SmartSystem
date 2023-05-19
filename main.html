@@ -1,0 +1,91 @@
+<!--온도,습도,조도 확인과 식물길이 측정, 외부인 출입 감시를 시작할 수 있는 html 코드-->
+<!doctype html>
+<html>
+<head>
+    <title>1891219 서한슬 - 농작물 관리</title>
+    <meta charset="utf-8">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pahomqtt/1.0.2/mqttws31.min.js" type="text/javascript"></script>
+    <script src="./static/mqttio.js" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js" type="text/javascript"></script>
+    <script src="./static/chart.js" type="text/javascript"></script>
+    <script>
+        window.addEventListener("load", function () {
+            // http://224..129:8080/에서 224...의 IP 만 끊어내는 코드
+            var url = new String(document.location);
+            ip = (url.split("//"))[1]; // ip = "224...:8080/"
+            ip = (ip.split(":"))[0]; // ip = "224..."
+            document.getElementById("broker").value = ip
+        });
+    </script>
+    <link rel="stylesheet" href="./static/style.css" type="text/css" />
+</head>
+<body>
+    <header>
+        <h3>🌻농작물 관리 웹페이지🌻</h3>
+        1891219 서한슬
+    </header>
+    <aside>
+        <form id="connection-form">
+            <b>브로커 IP:</b>
+            <input id="broker" type="text" name="broker" value=""><br>
+            <b>포트 번호 : 9001</b><br>
+            <input type="button" onclick="startConnect()" value="Connect">
+            <input type="button" onclick="startDisconnect()" value="Disconnect">
+        </form>
+    </aside>
+    <section>
+        <h3>작물 관찰</h3>
+        <form>
+            <input type="button" onclick="startWatch()" value="관찰시작">
+            <input type="button" onclick="stopWatch()" value="관찰중지">
+        </form>
+        <div>
+            <!--마우스를 올리면 값 확인 가능-->
+            <div>
+                <div onmouseover="show('temperature','1')" onmouseout="show('temperature','0')" id="tempMessage">
+                    <br><br><br>
+                    온도확인
+                </div>
+            </div>
+            <div>
+                <div onmouseover="show('humidity', '1')" onmouseout="show('humidity', '0')" id="humidMessage">
+                    <br><br><br>
+                    습도확인
+                </div>
+            </div>
+            <div>
+                <div onmouseover="show('light','1')" onmouseout="show('light', '0')" id="lightMessage">
+                    <br><br><br>
+                    조도확인
+                </div>
+            </div>
+        </div>
+        <hr>
+        <h3>작물 성장 기록</h3>
+        <span id="plantLength"> *지면 높이를 먼저 측정해주세요* </span>
+        <br><br>
+        <form id="subscribe-form">
+            <input type="button" onclick="subscribe('ultrasonic')" value="측정">
+        </form>
+        <!--캔버스에 차트가 출력됨-->
+        <canvas id="canvas" width="600" height="400"></canvas>
+        <hr>
+        <h3>감시 카메라</h3>
+        <form id="subscribe-form">
+            <input type="button" id="camera" onclick="recognizeTrue()" value="감시시작">
+            <input type="button" onclick="recognizeFalse()" value="감시해제">
+        </form>
+        <br>
+        <!--캔버스에 이미지가 출력됨-->
+        <canvas id="myCanvas" style="background-color: rgb(255, 204, 93)" width="320" height="240"></canvas>
+    </section>
+    <article>
+        <!--connect 와 subscribe 되면 메세지가 출력되는 공간-->
+        <div id="messages_subscribe"></div>
+    </article>
+    <article>
+        <!--disconnect 와 unsubscribe 되면 메세지가 출력되는 공간-->
+        <div id="messages_unsubscribe"></div>
+    </article>
+</body>
+</html>
